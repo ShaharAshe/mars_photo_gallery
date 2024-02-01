@@ -19,19 +19,21 @@
         <div class="col">
             <nav class="navbar navbar-expand-lg bg-body-tertiary">
                 <div class="container-fluid">
-                    <a class="navbar-brand" href="#"><img src="../media/mars_logo.png" class="mars_logo" alt="Mars logo image"></a>
+                    <a class="navbar-brand" href=""><img src="../media/mars_logo.png" class="mars_logo" alt="Mars logo image"></a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                             <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="#">Home</a>
+                                <a href=""><button type="button" class="btn btn-dark mx-2">Home</button></a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">Link</a>
+                                <button type="button" class="btn btn-secondary mx-2">Saved images</button>
                             </li>
-
+                            <li class="nav-item">
+                                <button type="button" class="btn btn-secondary mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal">Who am I</button>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -108,6 +110,28 @@
     <div class="row">
         <div class="col-12 text-center"><p>Search results</p></div>
         <div class="col-12 text-center d-none exist-u table-responsive">
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5 lead" id="exampleModalLabel">Who am I</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <li><u>name</u>: Shahar Asher</li>
+                    <li><u>Mail</u>: shaharas@edu.hac.ac.il</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>
