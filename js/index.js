@@ -3,6 +3,8 @@ const url = "https://api.nasa.gov/mars-photos/api/v1/rovers"
 
 const utilities = (function() {
     const api_data = {}
+    const search_res = {}
+    const saved_photos = {}
     const date_type_ev =  document.getElementById("date_type");
     const earth_date_ev =  document.getElementById("earth_date");
     const sol_number_ev =  document.getElementById("sol_number");
@@ -20,6 +22,8 @@ const utilities = (function() {
     const date_type_str = ["earth_date", "sol"];
     return {
         api_data: api_data,
+        search_res: search_res,
+        saved_photos: saved_photos,
         date_type_ev: date_type_ev,
         earth_date_ev: earth_date_ev,
         sol_number_ev: sol_number_ev,
@@ -103,6 +107,8 @@ const funcs = (function (){
             while(utilities.camera_ev.childElementCount !== 1) {
                 utilities.camera_ev.removeChild(utilities.camera_ev.lastChild);
             }
+
+            utilities.pic_result_ev.innerHTML = ``;
         },
         set_date_type: function (){
             utilities.date_of_cam_none_ev.forEach(date=>{
@@ -153,52 +159,25 @@ const main = (() => {
                     fetch(`${url}/${utilities.api_data[utilities.rover_ev.value]["name"]}/photos?api_key=${token}&${utilities.date_type_str[Number(utilities.date_type_ev.value)-1]}=${utilities.date_of_cam_alert_ev[Number(utilities.date_type_ev.value)-1].value}${camera_ref}`)
                         .then((response) => response.json())
                         .then((json) => {
-                            json['photos'].forEach(photo => {
-                                const body_div = document.createElement("div")
-                                body_div.classList.add("card-body")
-                                const div_card = document.createElement("div")
-                                div_card.setAttribute("style", "width: 18rem;")
-                                div_card.classList.add("card")
-                                const photo_l = document.createElement("img")
-                                photo_l.classList.add("card-img-top")
-                                photo_l.setAttribute("src", "")// img src
-                                photo_l.setAttribute("alt", "")// img alt
-                                const add_photo_1 = document.createElement("div");
-                                const content_photo = document.createElement("p")
-                                content_photo.classList.add("card-text")
-                                content_photo.innerHTML = `Earth date: ${photo["earth_date"]}`
-                                add_photo_1.appendChild(content_photo)
-                                content_photo.innerHTML = `Sol: ${photo["sol"]}`
-                                add_photo_1.appendChild(content_photo)
-                                content_photo.innerHTML = `Camera: ${photo["camera"]["name"]}`
-                                add_photo_1.appendChild(content_photo)
-                                content_photo.innerHTML = `Mission: ${utilities.api_data[utilities.rover_ev.value]["name"]}`
-                                add_photo_1.appendChild(content_photo)
-                                const button_div = document.createElement("div")
-                                const button_save = document.createElement("button")
-                                const button_full = document.createElement("button")
-                                button_save.setAttribute("type", "button")
-                                button_save.classList.add("btn btn-primary")
-                                button_save.innerHTML = 'save';
-                                button_full.setAttribute("type", "button")
-                                button_full.classList.add("btn btn-primary")
-                                button_full.innerHTML = 'full size'
-                                button_div.appendChild(button_save)
-                                button_full.appendChild(button_full)
-
-                                add_photo_1.appendChild(button_div)
-                                body_div.appendChild(add_photo_1)
+                            utilities.search_res = json['photos'];
+                            utilities.pic_result_ev.innerHTML = ``;
+                            let value_photo = 0;
+                            utilities.search_res.forEach(photo => {
+                                const img = `<div class=\"col-4 text-center\">
+                                                        <div class="card" style="width: 18rem;">
+                                                            <img src="${photo["img_src"]}" class="card-img-top" alt="mars image">
+                                                            <div class="card-body">
+                                                                <p class="card-text">Earth date: ${photo["earth_date"]}</p>
+                                                                <p class="card-text">Sol: ${photo["sol"]}</p>
+                                                                <p class="card-text">Camera: ${photo["camera"]["name"]}</p>
+                                                                <p class="card-text">Mission: ${utilities.api_data[utilities.rover_ev.value]["name"]}</p>
+                                                                <button class="btn btn-primary save_pic" value="${(value_photo++).toString()}">save</button>
+                                                                <a href="${photo["img_src"]}" target="_blank" class="btn btn-primary"">full image</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>`
+                                utilities.pic_result_ev.innerHTML += img
                             });
-                            // "<!--div class=\"col-4 text-center\">\n" +
-                            // "            <div class=\"card\" style=\"width: 18rem;\">\n" +
-                            // "                <img src=\"...\" class=\"card-img-top\" alt=\"...\">\n" +
-                            // "                <div class=\"card-body\">\n" +
-                            // "                    <p class=\"card-text\">Some quick example text to build on the card title and make up the bulk of the card's content.</p>\n" +
-                            // "                    <a href=\"#\" class=\"btn btn-primary\">Go somewhere</a>\n" +
-                            // "                </div>\n" +
-                            // "            </div>\n" +
-                            // "        </div-->"
-                            console.log(utilities.api_data);
                             utilities.spinner.classList.add("d-none");
                         })
                         // remove spinner hear
@@ -207,6 +186,21 @@ const main = (() => {
                         });
                 }
                 utilities.bad_val_gu_ev.innerHTML = alert_msg;
+
+                utilities.save_pics = document.querySelectorAll(".save_pic")
+            });
+            utilities.pic_result_ev.addEventListener("click", function(event){
+                console.log(utilities.search_res)
+                if (event.target.value)
+                {
+                    utilities.saved_photos[utilities.search_res[event.target.value]["id"]] = utilities.search_res[event.target.value]
+                }
+                console.log("target")
+                console.log(event.target.value)
+                console.log("target")
+                console.log("saved_photos")
+                console.log(utilities.saved_photos)
+                console.log("saved_photos")
             });
         },
     }
