@@ -71,7 +71,17 @@ const funcs = (function (){
                     utilities.camera_ev.appendChild(new_camera_options);
                 }
             }
-        }
+        },
+        update_date: function (){
+            utilities.sol_number_ev.removeAttribute("max");
+            utilities.earth_date_ev.removeAttribute("max");
+            utilities.earth_date_ev.removeAttribute("min");
+            if (utilities.rover_ev.value !== '0') {
+                utilities.sol_number_ev.setAttribute("max", utilities.api_data[utilities.rover_ev.value - 1]["max_sol"]);
+                utilities.earth_date_ev.setAttribute("max", utilities.api_data[utilities.rover_ev.value - 1]["max_date"]);
+                utilities.earth_date_ev.setAttribute("min", utilities.api_data[utilities.rover_ev.value - 1]["landing_date"]);
+            }
+        },
     }
 })()
 
@@ -85,13 +95,13 @@ const main = (() => {
                 utilities.date_of_cam_ev.forEach(date=>{
                     date.classList.add('d-none');
                 });
-                if(utilities.date_type_ev.value !== 0)
+                if(utilities.date_type_ev.value !== '0')
                     utilities.date_of_cam_ev[Number(utilities.date_type_ev.value)-1].classList.remove('d-none')
             })
 
             utilities.rover_ev.addEventListener("mouseup", function (){
-                //if ()
-                funcs.load_cameras()
+                funcs.load_cameras();
+                funcs.update_date();
             })
 
             utilities.reset_ev.addEventListener("click", function () {
