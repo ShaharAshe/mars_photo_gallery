@@ -58,41 +58,19 @@ const page_data = (function (){
 })()
 
 const funcs = (function (){
-    return{
-        load_cameras: function (){
-            // let cameras = "<option selected>Select Camera</option>"
-            // console.log("camera")
-            // console.log(utilities.rover_ev.value)
-            // console.log("camera")
-            // if(utilities.rover_ev.value !== '0')
-            //     for (let camera = 0; camera < utilities.api_data[utilities.rover_ev.value-1]["cameras"].length; ++camera) {
-            //         cameras += "<option value=\"${data}\">"+utilities.api_data[utilities.rover_ev.value-1]["cameras"][camera]["full_name"]+"</option>"
-            //     }
-            // utilities.camera_ev.innerHTML = cameras;
-
-
-            let cameras = "<option selected>Select Camera</option>"
-            console.log("len")
-            console.log(utilities.camera_ev.childElementCount)
-            console.log("len")
-
-                const camera_list_ev = document.querySelectorAll(".camera_list");
-                for (let i = 0; i < utilities.camera_ev.childElementCount - 1; ++i) {
-                    utilities.camera_ev.removeChild(utilities.camera_ev.lastChild);
-                }
-                if(utilities.rover_ev.value !== '0') {
-                console.log("camera")
-                console.log(utilities.rover_ev.value)
-                console.log("camera")
+    return {
+        load_cameras: function () {
+            while (utilities.camera_ev.childElementCount !== 1) {
+                utilities.camera_ev.removeChild(utilities.camera_ev.lastChild);
+            }
+            if (utilities.rover_ev.value !== '0') {
                 for (let camera = 0; camera < utilities.api_data[utilities.rover_ev.value - 1]["cameras"].length; ++camera) {
                     const new_camera_options = document.createElement("option");
                     new_camera_options.value = (camera + 1).toString();
                     new_camera_options.innerHTML = utilities.api_data[utilities.rover_ev.value - 1]["cameras"][camera]["full_name"];
-                    new_camera_options.classList.add("camera_list");
                     utilities.camera_ev.appendChild(new_camera_options);
                 }
             }
-
         }
     }
 })()
@@ -117,13 +95,17 @@ const main = (() => {
             })
 
             utilities.reset_ev.addEventListener("click", function () {
-                utilities.date_type_ev.selectedIndex = 0
+                utilities.date_type_ev.selectedIndex = 0;
+                utilities.rover_ev.selectedIndex = 0;
                 utilities.date_of_cam_ev.forEach(date => {
                     date.classList.add('d-none');
                 });
                 utilities.earth_date_ev.value = "";
                 utilities.sol_number_ev.value = "";
-                utilities.camera_ev.innerHTML = "<option selected>Select Camera</option>";
+
+                while(utilities.camera_ev.childElementCount !== 1) {
+                    utilities.camera_ev.removeChild(utilities.camera_ev.lastChild);
+                }
             })
         },
     }
