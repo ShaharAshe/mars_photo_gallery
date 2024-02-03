@@ -29,12 +29,14 @@ const utilities = (function() {
 
 const page_data = (function (){
     const load_rovers = () => {
-        let rovers = "<option selected>Select Rover</option>"
+        const new_rover_options = document.createElement("option")
         for (let data = 0; data < utilities.api_data.length; ++data) {
+            const new_rover_options = document.createElement("option")
+            new_rover_options.value = (data+1).toString();
+            new_rover_options.innerHTML = utilities.api_data[data]["name"];
             console.log(utilities.api_data[data])
-            rovers += "<option value=\"${data}\">"+utilities.api_data[data]["name"]+"</option>"
+            utilities.rover_ev.appendChild(new_rover_options);
         }
-        utilities.rover_ev.innerHTML = rovers;
     }
     return{
         load_data: function () {
@@ -58,13 +60,39 @@ const page_data = (function (){
 const funcs = (function (){
     return{
         load_cameras: function (){
-            let cameras = "<option selected>Select Camera</option>"
-            if(utilities.rover_ev.selectedIndex !== 0)
-                for (let camera = 0; camera < utilities.api_data[utilities.rover_ev.selectedIndex-1]["cameras"].length; ++camera) {
-                    cameras += "<option value=\"${data}\">"+utilities.api_data[utilities.rover_ev.selectedIndex-1]["cameras"][camera]["full_name"]+"</option>"
-                }
+            // let cameras = "<option selected>Select Camera</option>"
+            // console.log("camera")
+            // console.log(utilities.rover_ev.value)
+            // console.log("camera")
+            // if(utilities.rover_ev.value !== '0')
+            //     for (let camera = 0; camera < utilities.api_data[utilities.rover_ev.value-1]["cameras"].length; ++camera) {
+            //         cameras += "<option value=\"${data}\">"+utilities.api_data[utilities.rover_ev.value-1]["cameras"][camera]["full_name"]+"</option>"
+            //     }
+            // utilities.camera_ev.innerHTML = cameras;
 
-            utilities.camera_ev.innerHTML = cameras;
+
+            let cameras = "<option selected>Select Camera</option>"
+            console.log("len")
+            console.log(utilities.camera_ev.childElementCount)
+            console.log("len")
+
+                const camera_list_ev = document.querySelectorAll(".camera_list");
+                for (let i = 0; i < utilities.camera_ev.childElementCount - 1; ++i) {
+                    utilities.camera_ev.removeChild(utilities.camera_ev.lastChild);
+                }
+                if(utilities.rover_ev.value !== '0') {
+                console.log("camera")
+                console.log(utilities.rover_ev.value)
+                console.log("camera")
+                for (let camera = 0; camera < utilities.api_data[utilities.rover_ev.value - 1]["cameras"].length; ++camera) {
+                    const new_camera_options = document.createElement("option");
+                    new_camera_options.value = (camera + 1).toString();
+                    new_camera_options.innerHTML = utilities.api_data[utilities.rover_ev.value - 1]["cameras"][camera]["full_name"];
+                    new_camera_options.classList.add("camera_list");
+                    utilities.camera_ev.appendChild(new_camera_options);
+                }
+            }
+
         }
     }
 })()
@@ -79,11 +107,12 @@ const main = (() => {
                 utilities.date_of_cam_ev.forEach(date=>{
                     date.classList.add('d-none');
                 });
-                if(utilities.date_type_ev.selectedIndex !== 0)
+                if(utilities.date_type_ev.value !== 0)
                     utilities.date_of_cam_ev[Number(utilities.date_type_ev.value)-1].classList.remove('d-none')
             })
 
             utilities.rover_ev.addEventListener("mouseup", function (){
+                //if ()
                 funcs.load_cameras()
             })
 
