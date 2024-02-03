@@ -47,8 +47,6 @@
     <div class="row">
         <div class="col-4 d-none d-md-block"></div>
 
-
-
         <!--form-->
         <div class="col-12 col-lg-4">
             <div class="spinner-border position-absolute top-50 start-50 end-50 bottom-50" role="status" style="font-size: 50px; width: 10rem; height: 10rem;">
@@ -64,13 +62,13 @@
                         <option value="2">Sol number</option>
                     </select>
                 </div>
-                <div class="col-12 col-md-6 date_of_cam d-none">
+                <div class="col-12 col-md-6 date_of_cam_none d-none">
                     <label for="earth_date" class="form-label">Earth date</label>
-                    <input type="date" class="form-control" id="earth_date">
+                    <input type="date" class="form-control date_of_cam_alert" id="earth_date">
                 </div>
-                <div class="col-12 col-md-6 date_of_cam d-none">
+                <div class="col-12 col-md-6 date_of_cam_none d-none">
                     <label for="sol_number" class="form-label">Sol number</label>
-                    <input type="number" class="form-control" id="sol_number">
+                    <input type="number" class="form-control date_of_cam_alert" id="sol_number">
                 </div>
 
                 <!--rover-->
@@ -92,7 +90,7 @@
                 </div>
 
                 <!--error-->
-                <div class="bad-val-gu alert alert-danger d-none"></div>
+                <div class="bad_val_gu alert alert-danger d-none"></div>
 
                 <!--buttons-->
                 <div class="col-12 text-center">
@@ -105,11 +103,20 @@
     </div>
 
     <hr>
-
-    <!--results-->
     <div class="row">
         <div class="col-12 text-center"><p>Search results</p></div>
-        <div class="col-12 text-center d-none exist-u table-responsive">
+    </div>
+    <!--results-->
+    <div class="row pic_result">
+        <div class="col-4 text-center">
+            <!--div class="card" style="width: 18rem;">
+                <img src="..." class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a href="#" class="btn btn-primary">Go somewhere</a>
+                </div>
+            </div-->
         </div>
     </div>
 </div>
