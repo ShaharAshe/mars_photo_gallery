@@ -16,6 +16,8 @@ const utilities = (function() {
     const bad_val_gu_ev = document.querySelector(".bad_val_gu");
 
     const spinner = document.querySelector(".spinner-border");
+
+    const date_type_str = ["earth_date", "sol"];
     return {
         api_data: api_data,
         date_type_ev: date_type_ev,
@@ -30,6 +32,7 @@ const utilities = (function() {
         reset_ev: reset_ev,
         pic_result_ev: pic_result_ev,
         bad_val_gu_ev: bad_val_gu_ev,
+        date_type_str: date_type_str,
     };
 })()
 
@@ -72,7 +75,7 @@ const funcs = (function (){
             if (utilities.rover_ev.value !== '0') {
                 for (let camera = 0; camera < utilities.api_data[utilities.rover_ev.value - 1]["cameras"].length; ++camera) {
                     const new_camera_options = document.createElement("option");
-                    new_camera_options.value = (camera + 1).toString();
+                    new_camera_options.value = utilities.api_data[utilities.rover_ev.value - 1]["cameras"][camera]["name"];
                     new_camera_options.innerHTML = utilities.api_data[utilities.rover_ev.value - 1]["cameras"][camera]["full_name"];
                     utilities.camera_ev.appendChild(new_camera_options);
                 }
@@ -132,14 +135,77 @@ const main = (() => {
 
             utilities.search_ev.addEventListener("click", function (){
                 let alert_msg = ""
-                alert_msg += ""
                 utilities.bad_val_gu_ev.classList.add("d-none")
                 if (utilities.date_type_ev.value === "0")
                     alert_msg += "The date type must not be empty";
                 else if (!utilities.date_of_cam_alert_ev[Number(utilities.date_type_ev.value)-1].value)
                     alert_msg += "The date must not be empty";
-                if (alert_msg !== "")
+                if (utilities.rover_ev.value === '0')
+                    alert_msg += "\nThe rover must not be empty";
+                if (alert_msg !== ""){
                     utilities.bad_val_gu_ev.classList.remove("d-none")
+                }
+                else{
+                    utilities.spinner.classList.remove("d-none");
+                    let camera_ref = ''
+                    if (utilities.camera_ev.value !== '0')
+                        camera_ref += `&camera=${utilities.camera_ev.value}`
+                    fetch(`${url}/${utilities.api_data[utilities.rover_ev.value]["name"]}/photos?api_key=${token}&${utilities.date_type_str[Number(utilities.date_type_ev.value)-1]}=${utilities.date_of_cam_alert_ev[Number(utilities.date_type_ev.value)-1].value}${camera_ref}`)
+                        .then((response) => response.json())
+                        .then((json) => {
+                            json['photos'].forEach(photo => {
+                                const body_div = document.createElement("div")
+                                body_div.classList.add("card-body")
+                                const div_card = document.createElement("div")
+                                div_card.setAttribute("style", "width: 18rem;")
+                                div_card.classList.add("card")
+                                const photo_l = document.createElement("img")
+                                photo_l.classList.add("card-img-top")
+                                photo_l.setAttribute("src", "")// img src
+                                photo_l.setAttribute("alt", "")// img alt
+                                const add_photo_1 = document.createElement("div");
+                                const content_photo = document.createElement("p")
+                                content_photo.classList.add("card-text")
+                                content_photo.innerHTML = `Earth date: ${photo["earth_date"]}`
+                                add_photo_1.appendChild(content_photo)
+                                content_photo.innerHTML = `Sol: ${photo["sol"]}`
+                                add_photo_1.appendChild(content_photo)
+                                content_photo.innerHTML = `Camera: ${photo["camera"]["name"]}`
+                                add_photo_1.appendChild(content_photo)
+                                content_photo.innerHTML = `Mission: ${utilities.api_data[utilities.rover_ev.value]["name"]}`
+                                add_photo_1.appendChild(content_photo)
+                                const button_div = document.createElement("div")
+                                const button_save = document.createElement("button")
+                                const button_full = document.createElement("button")
+                                button_save.setAttribute("type", "button")
+                                button_save.classList.add("btn btn-primary")
+                                button_save.innerHTML = 'save';
+                                button_full.setAttribute("type", "button")
+                                button_full.classList.add("btn btn-primary")
+                                button_full.innerHTML = 'full size'
+                                button_div.appendChild(button_save)
+                                button_full.appendChild(button_full)
+
+                                add_photo_1.appendChild(button_div)
+                                body_div.appendChild(add_photo_1)
+                            });
+                            // "<!--div class=\"col-4 text-center\">\n" +
+                            // "            <div class=\"card\" style=\"width: 18rem;\">\n" +
+                            // "                <img src=\"...\" class=\"card-img-top\" alt=\"...\">\n" +
+                            // "                <div class=\"card-body\">\n" +
+                            // "                    <p class=\"card-text\">Some quick example text to build on the card title and make up the bulk of the card's content.</p>\n" +
+                            // "                    <a href=\"#\" class=\"btn btn-primary\">Go somewhere</a>\n" +
+                            // "                </div>\n" +
+                            // "            </div>\n" +
+                            // "        </div-->"
+                            console.log(utilities.api_data);
+                            utilities.spinner.classList.add("d-none");
+                        })
+                        // remove spinner hear
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                }
                 utilities.bad_val_gu_ev.innerHTML = alert_msg;
             });
         },
