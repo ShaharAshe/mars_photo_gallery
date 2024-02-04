@@ -19,18 +19,14 @@
         <div class="col">
             <nav class="navbar navbar-expand-lg bg-body-tertiary">
                 <div class="container-fluid">
-                    <a class="navbar-brand" href=""><img src="../media/mars_logo.png" class="mars_logo" alt="Mars logo image"></a>
+                    <a class="navbar-brand home_button" href="#"><img src="../media/mars_logo.png" class="mars_logo" alt="Mars logo image"></a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item">
-                                <a href=""><button type="button" class="btn btn-dark mx-2">Home</button></a>
-                            </li>
-                            <li class="nav-item">
-                                <button type="button" class="btn btn-secondary mx-2">Saved images</button>
-                            </li>
+                            <li class="nav-item"><button type="button" class="btn btn-dark mx-2 home_button">Home</button></li>
+                            <li class="nav-item"><button type="button" class="btn btn-secondary mx-2 saved_button">Saved images</button></li>
                             <li class="nav-item">
                                 <button type="button" class="btn btn-secondary mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal">Who am I</button>
                             </li>
@@ -44,7 +40,7 @@
     <br>
 
     <!--main-->
-    <div class="row">
+    <div class="row home_page">
         <div class="col-4 d-none d-md-block"></div>
 
         <!--form-->
@@ -82,7 +78,7 @@
 
                 <!--camera-->
                 <div class="col-12">
-                    <label for="camera" class="form-label">Select Camera</label>
+                    <label for="camera" class="form-label">Select Camera <abbr title="need to select rover first" class="initialism"><b>?</b></abbr></label>
                     <!--popover-->
                     <select class="form-select" aria-label="Default select example" id="camera" data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="bottom" data-bs-content="Bottom popover">
                         <option value="0" selected>Select Camera</option>
@@ -103,12 +99,12 @@
         <div class="col-4 d-none d-md-block"></div>
     </div>
 
-    <hr>
-    <div class="row">
+    <hr class="home_page">
+    <div class="row home_page">
         <div class="col-12 text-center"><p>Search results</p></div>
     </div>
     <!--results-->
-    <div class="row pic_result">
+    <div class="row pic_result home_page">
         <!--div class="col-4 text-center">
             <div class="card" style="width: 18rem;">
                 <img src="..." class="card-img-top" alt="...">
@@ -120,6 +116,10 @@
             </div>
         </div-->
     </div>
+
+    <hr class="save_page">
+    <div class="row save_page d-none"><div class="col-12 text-center"><p>Saved images</p></div></div>
+    <div class="row save_page d-none"></div>
 </div>
 
 

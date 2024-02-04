@@ -16,6 +16,10 @@ const utilities = (function() {
     const reset_ev = document.querySelector(".reset_form_b");
     const pic_result_ev = document.querySelector(".pic_result");
     const bad_val_gu_ev = document.querySelector(".bad_val_gu");
+    const home_button_ev = document.querySelector(".home_button");
+    const saved_button_ev = document.querySelector(".saved_button");
+    const home_page = document.querySelectorAll(".home_page");
+    const save_page = document.querySelectorAll(".save_page");
 
     const spinner = document.querySelector(".spinner-border");
 
@@ -37,6 +41,10 @@ const utilities = (function() {
         pic_result_ev: pic_result_ev,
         bad_val_gu_ev: bad_val_gu_ev,
         date_type_str: date_type_str,
+        home_button_ev: home_button_ev,
+        saved_button_ev: saved_button_ev,
+        home_page: home_page,
+        save_page: save_page,
     };
 })()
 
@@ -133,7 +141,16 @@ const main = (() => {
                 funcs.set_date_type();
             });
 
+            utilities.date_type_ev.addEventListener("keyup", function (){
+                funcs.set_date_type();
+            });
+
             utilities.rover_ev.addEventListener("mouseup", function (){
+                funcs.load_cameras();
+                funcs.update_date();
+            });
+
+            utilities.rover_ev.addEventListener("keyup", function (){
                 funcs.load_cameras();
                 funcs.update_date();
             });
@@ -157,9 +174,6 @@ const main = (() => {
                 else{
                     utilities.spinner.classList.remove("d-none");
                     let camera_ref = ''
-                    console.log("rover")
-                    console.log(utilities.api_data[utilities.rover_ev.value-1]["name"])
-                    console.log("rover")
                     if (utilities.camera_ev.value !== '0')
                         camera_ref += `&camera=${utilities.camera_ev.value}`
                     fetch(`${url}/${utilities.api_data[utilities.rover_ev.value-1]["name"]}/photos?api_key=${token}&${utilities.date_type_str[Number(utilities.date_type_ev.value)-1]}=${utilities.date_of_cam_alert_ev[Number(utilities.date_type_ev.value)-1].value}${camera_ref}`)
@@ -207,6 +221,26 @@ const main = (() => {
                 console.log("saved_photos")
                 console.log(utilities.saved_photos)
                 console.log("saved_photos")
+            });
+
+            utilities.saved_button_ev.addEventListener("click", function(event){
+                utilities.home_page.forEach(home=>{
+                    home.classList.add("d-none")
+                });
+                utilities.save_page.forEach(save=>{
+                    save.classList.remove("d-none")
+                });
+            });
+
+            utilities.home_button_ev.addEventListener("click", function(event){
+                utilities.save_page.forEach(home=>{
+                    home.classList.add("d-none")
+                });
+                utilities.home_page.forEach(save=>{
+                    save.classList.remove("d-none")
+                });
+
+                funcs.reset_form();
             });
         },
     }
