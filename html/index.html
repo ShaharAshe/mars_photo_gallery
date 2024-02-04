@@ -19,14 +19,14 @@
         <div class="col">
             <nav class="navbar navbar-expand-lg bg-body-tertiary">
                 <div class="container-fluid">
-                    <a class="navbar-brand home_button" href="#"><img src="../media/mars_logo.png" class="mars_logo" alt="Mars logo image"></a>
+                    <a class="navbar-brand" href="#" onclick="main.home_click()"><img src="../media/mars_logo.png" class="mars_logo" alt="Mars logo image"></a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item"><button type="button" class="btn btn-dark mx-2 home_button">Home</button></li>
-                            <li class="nav-item"><button type="button" class="btn btn-secondary mx-2 saved_button">Saved images</button></li>
+                            <li class="nav-item"><button type="button" class="btn btn-dark mx-2" onclick="main.home_click()">Home</button></li>
+                            <li class="nav-item"><button type="button" class="btn btn-secondary mx-2" onclick="main.save_click()">Saved images</button></li>
                             <li class="nav-item">
                                 <button type="button" class="btn btn-secondary mx-2" data-bs-toggle="modal" data-bs-target="#exampleModal">Who am I</button>
                             </li>
@@ -119,7 +119,7 @@
 
     <hr class="save_page">
     <div class="row save_page d-none"><div class="col-12 text-center"><p>Saved images</p></div></div>
-    <div class="row save_page d-none"></div>
+    <div class="row save_page save_result d-none"></div>
 </div>
 
 
