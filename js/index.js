@@ -126,6 +126,44 @@ const funcs = (function (){
             if(utilities.date_type_ev.value !== '0')
                 utilities.date_of_cam_none_ev[Number(utilities.date_type_ev.value)-1].classList.remove('d-none')
         },
+        save_click: function () {
+            utilities.save_result_ev.innerHTML = ``
+            console.log(utilities.saved_photos_data)
+            utilities.saved_photos_data.forEach(photo => {
+                const img = `<div class="col-12 col-sm-6 col-lg-4 text-center">
+                                                        <div class="card" style="width: 18rem;">
+                                                            <img src="${photo["img_src"]}" class="card-img-top img-fluid d-none d-sm-block" alt="mars image">
+                                                            <div class="card-body">
+                                                                <p class="card-text">Earth date: ${photo["earth_date"]}</p>
+                                                                <p class="card-text">Sol: ${photo["sol"]}</p>
+                                                                <p class="card-text">Camera: ${photo["camera"]["name"]}</p>
+                                                                <p class="card-text">Mission: ${photo["rover"]["name"]}</p>
+                                                                <button class="btn btn-danger del_pic" value="${(utilities.saved_photos_data.indexOf(photo).toString())}">delete</button>
+                                                                <a href="${photo["img_src"]}" target="_blank" class="btn btn-primary"">full image</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>`
+                utilities.save_result_ev.innerHTML += img
+            });
+
+            utilities.home_page.forEach(home => {
+                home.classList.add("d-none")
+            });
+            utilities.save_page.forEach(save => {
+                save.classList.remove("d-none")
+            });
+        },
+        home_click: function () {
+            console.log("home")
+            utilities.save_page.forEach(home => {
+                home.classList.add("d-none")
+            });
+            utilities.home_page.forEach(save => {
+                save.classList.remove("d-none")
+            });
+
+            funcs.reset_form();
+        },
     }
 })()
 
@@ -188,7 +226,7 @@ const main = (() => {
                                                                 <p class="card-text">Sol: ${photo["sol"]}</p>
                                                                 <p class="card-text">Camera: ${photo["camera"]["name"]}</p>
                                                                 <p class="card-text">Mission: ${utilities.api_data[Number(utilities.rover_ev.value) - 1]["name"]}</p>
-                                                                <button class="btn btn-primary save_pic" value="${(value_photo++).toString()}">save</button>
+                                                                <button class="btn btn-success save_pic" value="${(value_photo++).toString()}">save</button>
                                                                 <a href="${photo["img_src"]}" target="_blank" class="btn btn-primary"">full image</a>
                                                             </div>
                                                         </div>
@@ -206,6 +244,7 @@ const main = (() => {
 
                 utilities.save_pics = document.querySelectorAll(".save_pic")
             });
+
             utilities.pic_result_ev.addEventListener("click", function (event) {
                 console.log(utilities.search_res)
                 if (event.target.value) {
@@ -213,45 +252,16 @@ const main = (() => {
                 }
             });
 
-
+            utilities.save_result_ev.addEventListener("click", function (event) {
+                console.log("delete 1")
+                if (event.target.value) {
+                    console.log("delete 2")
+                    console.log(event.target.value)
+                    console.log("delete 2")
+                    delete utilities.saved_photos_data[event.target.value]
+                    funcs.save_click()
+                }
+            });
         },
-        home_click: function () {
-            console.log("home")
-            utilities.save_page.forEach(home => {
-                home.classList.add("d-none")
-            });
-            utilities.home_page.forEach(save => {
-                save.classList.remove("d-none")
-            });
-
-            funcs.reset_form();
-        },
-        save_click: function () {
-            utilities.save_result_ev.innerHTML = ``
-            console.log(utilities.saved_photos_data)
-            utilities.saved_photos_data.forEach(photo => {
-                const img = `<div class="col-12 col-sm-6 col-lg-4 text-center">
-                                                        <div class="card" style="width: 18rem;">
-                                                            <img src="${photo["img_src"]}" class="card-img-top img-fluid d-none d-sm-block" alt="mars image">
-                                                            <div class="card-body">
-                                                                <p class="card-text">Earth date: ${photo["earth_date"]}</p>
-                                                                <p class="card-text">Sol: ${photo["sol"]}</p>
-                                                                <p class="card-text">Camera: ${photo["camera"]["name"]}</p>
-                                                                <p class="card-text">Mission: ${photo["rover"]["name"]}</p>
-                                                                <button class="btn btn-primary save_pic" value="${(utilities.saved_photos_data.indexOf(photo).toString())}">save</button>
-                                                                <a href="${photo["img_src"]}" target="_blank" class="btn btn-primary"">full image</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>`
-                utilities.save_result_ev.innerHTML += img
-            });
-
-            utilities.home_page.forEach(home => {
-                home.classList.add("d-none")
-            });
-            utilities.save_page.forEach(save => {
-                save.classList.remove("d-none")
-            });
-        }
     }
 })()
