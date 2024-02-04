@@ -80,6 +80,9 @@ const funcs = (function (){
                 for (let camera = 0; camera < utilities.api_data[utilities.rover_ev.value - 1]["cameras"].length; ++camera) {
                     const new_camera_options = document.createElement("option");
                     new_camera_options.value = utilities.api_data[utilities.rover_ev.value - 1]["cameras"][camera]["name"];
+                    console.log("camera name")
+                    console.log(utilities.api_data[utilities.rover_ev.value - 1]["cameras"][camera]["name"])
+                    console.log("camera name")
                     new_camera_options.innerHTML = utilities.api_data[utilities.rover_ev.value - 1]["cameras"][camera]["full_name"];
                     utilities.camera_ev.appendChild(new_camera_options);
                 }
@@ -154,9 +157,12 @@ const main = (() => {
                 else{
                     utilities.spinner.classList.remove("d-none");
                     let camera_ref = ''
+                    console.log("rover")
+                    console.log(utilities.api_data[utilities.rover_ev.value-1]["name"])
+                    console.log("rover")
                     if (utilities.camera_ev.value !== '0')
                         camera_ref += `&camera=${utilities.camera_ev.value}`
-                    fetch(`${url}/${utilities.api_data[utilities.rover_ev.value]["name"]}/photos?api_key=${token}&${utilities.date_type_str[Number(utilities.date_type_ev.value)-1]}=${utilities.date_of_cam_alert_ev[Number(utilities.date_type_ev.value)-1].value}${camera_ref}`)
+                    fetch(`${url}/${utilities.api_data[utilities.rover_ev.value-1]["name"]}/photos?api_key=${token}&${utilities.date_type_str[Number(utilities.date_type_ev.value)-1]}=${utilities.date_of_cam_alert_ev[Number(utilities.date_type_ev.value)-1].value}${camera_ref}`)
                         .then((response) => response.json())
                         .then((json) => {
                             utilities.search_res = json['photos'];
@@ -170,7 +176,7 @@ const main = (() => {
                                                                 <p class="card-text">Earth date: ${photo["earth_date"]}</p>
                                                                 <p class="card-text">Sol: ${photo["sol"]}</p>
                                                                 <p class="card-text">Camera: ${photo["camera"]["name"]}</p>
-                                                                <p class="card-text">Mission: ${utilities.api_data[utilities.rover_ev.value]["name"]}</p>
+                                                                <p class="card-text">Mission: ${utilities.api_data[Number(utilities.rover_ev.value)-1]["name"]}</p>
                                                                 <button class="btn btn-primary save_pic" value="${(value_photo++).toString()}">save</button>
                                                                 <a href="${photo["img_src"]}" target="_blank" class="btn btn-primary"">full image</a>
                                                             </div>
