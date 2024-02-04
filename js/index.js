@@ -2,7 +2,6 @@ const token = "yy2G4hgnUsRe9BEjKIpfHHjMKCO3nj9ifdOMmHa2";
 const url = "https://api.nasa.gov/mars-photos/api/v1/rovers"
 
 const utilities = (function() {
-    const api_data = {}
     const search_res = {}
     const saved_photos_data = []
     const date_type_ev =  document.getElementById("date_type");
@@ -19,12 +18,15 @@ const utilities = (function() {
     const bad_val_gu_ev = document.querySelector(".bad_val_gu");
     const home_page = document.querySelectorAll(".home_page");
     const save_page = document.querySelectorAll(".save_page");
-
+    const saved_toastLive = document.getElementById('saveLiveToast');
+    const delete_toastLive = document.getElementById('delLiveToast');
     const spinner = document.querySelector(".spinner-border");
+    const carousel_ev = document.querySelector(".carousel-inner");
+    const show_img_car = document.querySelectorAll(".show_img_car");
+    const Hide_img_car = document.querySelectorAll(".Hide_img_car");
 
     const date_type_str = ["earth_date", "sol"];
     return {
-        api_data: api_data,
         search_res: search_res,
         saved_photos_data: saved_photos_data,
         date_type_ev: date_type_ev,
@@ -43,28 +45,32 @@ const utilities = (function() {
         date_type_str: date_type_str,
         home_page: home_page,
         save_page: save_page,
+        saved_toastLive: saved_toastLive,
+        delete_toastLive: delete_toastLive,
+        carousel_ev: carousel_ev,
+        show_img_car: show_img_car,
+        Hide_img_car: Hide_img_car,
     };
 })()
 
 const page_data = (function (){
+    const api_data = {}
     const load_rovers = () => {
-        const new_rover_options = document.createElement("option")
-        for (let data = 0; data < utilities.api_data.length; ++data) {
+        for (let data = 0; data < page_data.api_data.length; ++data) {
             const new_rover_options = document.createElement("option")
             new_rover_options.value = (data+1).toString();
-            new_rover_options.innerHTML = utilities.api_data[data]["name"];
-            console.log(utilities.api_data[data])
+            new_rover_options.innerHTML = page_data.api_data[data]["name"];
             utilities.rover_ev.appendChild(new_rover_options);
         }
     }
     return{
+        api_data: api_data,
         load_data: function () {
             // add spinner hear
             fetch(`${url}?api_key=${token}`)
                 .then((response) => response.json())
                 .then((json) => {
-                    utilities.api_data = json['rovers'];
-                    console.log(utilities.api_data);
+                    page_data.api_data = json['rovers'];
                     load_rovers();
                     utilities.spinner.classList.add("d-none");
                 })
@@ -83,13 +89,10 @@ const funcs = (function (){
                 utilities.camera_ev.removeChild(utilities.camera_ev.lastChild);
             }
             if (utilities.rover_ev.value !== '0') {
-                for (let camera = 0; camera < utilities.api_data[utilities.rover_ev.value - 1]["cameras"].length; ++camera) {
+                for (let camera = 0; camera < page_data.api_data[utilities.rover_ev.value - 1]["cameras"].length; ++camera) {
                     const new_camera_options = document.createElement("option");
-                    new_camera_options.value = utilities.api_data[utilities.rover_ev.value - 1]["cameras"][camera]["name"];
-                    console.log("camera name")
-                    console.log(utilities.api_data[utilities.rover_ev.value - 1]["cameras"][camera]["name"])
-                    console.log("camera name")
-                    new_camera_options.innerHTML = utilities.api_data[utilities.rover_ev.value - 1]["cameras"][camera]["full_name"];
+                    new_camera_options.value = page_data.api_data[utilities.rover_ev.value - 1]["cameras"][camera]["name"];
+                    new_camera_options.innerHTML = page_data.api_data[utilities.rover_ev.value - 1]["cameras"][camera]["full_name"];
                     utilities.camera_ev.appendChild(new_camera_options);
                 }
             }
@@ -99,9 +102,9 @@ const funcs = (function (){
             utilities.earth_date_ev.removeAttribute("max");
             utilities.earth_date_ev.removeAttribute("min");
             if (utilities.rover_ev.value !== '0') {
-                utilities.sol_number_ev.setAttribute("max", utilities.api_data[utilities.rover_ev.value - 1]["max_sol"]);
-                utilities.earth_date_ev.setAttribute("max", utilities.api_data[utilities.rover_ev.value - 1]["max_date"]);
-                utilities.earth_date_ev.setAttribute("min", utilities.api_data[utilities.rover_ev.value - 1]["landing_date"]);
+                utilities.sol_number_ev.setAttribute("max", page_data.api_data[utilities.rover_ev.value - 1]["max_sol"]);
+                utilities.earth_date_ev.setAttribute("max", page_data.api_data[utilities.rover_ev.value - 1]["max_date"]);
+                utilities.earth_date_ev.setAttribute("min", page_data.api_data[utilities.rover_ev.value - 1]["landing_date"]);
             }
         },
         reset_form: function (){
@@ -128,7 +131,8 @@ const funcs = (function (){
         },
         save_click: function () {
             utilities.save_result_ev.innerHTML = ``
-            console.log(utilities.saved_photos_data)
+            utilities.carousel_ev.innerHTML = ``
+            let index = 0;
             utilities.saved_photos_data.forEach(photo => {
                 const img = `<div class="col-12 col-sm-6 col-lg-4 text-center">
                                                         <div class="card" style="width: 18rem;">
@@ -144,6 +148,15 @@ const funcs = (function (){
                                                         </div>
                                                     </div>`
                 utilities.save_result_ev.innerHTML += img
+                let carousel_scope = ``
+                if(index === 0) {
+                    carousel_scope = `<div class="carousel-item active"><img src="${photo["img_src"]}" class="d-block w-100" alt="mars image"></div>`
+                    ++index;
+                }
+                else
+                    carousel_scope = `<div class="carousel-item"><img src="${photo["img_src"]}" class="d-block w-100" alt="mars image"></div>`
+
+                utilities.carousel_ev.innerHTML += carousel_scope;
             });
 
             utilities.home_page.forEach(home => {
@@ -154,7 +167,6 @@ const funcs = (function (){
             });
         },
         home_click: function () {
-            console.log("home")
             utilities.save_page.forEach(home => {
                 home.classList.add("d-none")
             });
@@ -162,7 +174,24 @@ const funcs = (function (){
                 save.classList.remove("d-none")
             });
 
+            funcs.hide_carousel()
             funcs.reset_form();
+        },
+        show_carousel: function (){
+            utilities.show_img_car.forEach(car => {
+                car.classList.add('d-none')
+            });
+            utilities.Hide_img_car.forEach(car => {
+                car.classList.remove('d-none')
+            });
+        },
+        hide_carousel: function (){
+            utilities.show_img_car.forEach(car => {
+                car.classList.remove('d-none')
+            });
+            utilities.Hide_img_car.forEach(car => {
+                car.classList.add('d-none')
+            });
         },
     }
 })()
@@ -198,20 +227,25 @@ const main = (() => {
             utilities.search_ev.addEventListener("click", function () {
                 let alert_msg = ""
                 utilities.bad_val_gu_ev.classList.add("d-none")
+
                 if (utilities.date_type_ev.value === "0")
                     alert_msg += "The date type must not be empty";
                 else if (!utilities.date_of_cam_alert_ev[Number(utilities.date_type_ev.value) - 1].value)
                     alert_msg += "The date must not be empty";
+
                 if (utilities.rover_ev.value === '0')
                     alert_msg += "\nThe rover must not be empty";
+
                 if (alert_msg !== "") {
                     utilities.bad_val_gu_ev.classList.remove("d-none")
                 } else {
                     utilities.spinner.classList.remove("d-none");
                     let camera_ref = ''
+
                     if (utilities.camera_ev.value !== '0')
                         camera_ref += `&camera=${utilities.camera_ev.value}`
-                    fetch(`${url}/${utilities.api_data[utilities.rover_ev.value - 1]["name"]}/photos?api_key=${token}&${utilities.date_type_str[Number(utilities.date_type_ev.value) - 1]}=${utilities.date_of_cam_alert_ev[Number(utilities.date_type_ev.value) - 1].value}${camera_ref}`)
+
+                    fetch(`${url}/${page_data.api_data[utilities.rover_ev.value - 1]["name"]}/photos?api_key=${token}&${utilities.date_type_str[Number(utilities.date_type_ev.value) - 1]}=${utilities.date_of_cam_alert_ev[Number(utilities.date_type_ev.value) - 1].value}${camera_ref}`)
                         .then((response) => response.json())
                         .then((json) => {
                             utilities.search_res = json['photos'];
@@ -225,7 +259,7 @@ const main = (() => {
                                                                 <p class="card-text">Earth date: ${photo["earth_date"]}</p>
                                                                 <p class="card-text">Sol: ${photo["sol"]}</p>
                                                                 <p class="card-text">Camera: ${photo["camera"]["name"]}</p>
-                                                                <p class="card-text">Mission: ${utilities.api_data[Number(utilities.rover_ev.value) - 1]["name"]}</p>
+                                                                <p class="card-text">Mission: ${page_data.api_data[Number(utilities.rover_ev.value) - 1]["name"]}</p>
                                                                 <button class="btn btn-success save_pic" value="${(value_photo++).toString()}">save</button>
                                                                 <a href="${photo["img_src"]}" target="_blank" class="btn btn-primary"">full image</a>
                                                             </div>
@@ -241,25 +275,23 @@ const main = (() => {
                         });
                 }
                 utilities.bad_val_gu_ev.innerHTML = alert_msg;
-
                 utilities.save_pics = document.querySelectorAll(".save_pic")
             });
 
             utilities.pic_result_ev.addEventListener("click", function (event) {
-                console.log(utilities.search_res)
                 if (event.target.value) {
                     utilities.saved_photos_data[utilities.search_res[event.target.value]["id"]] = utilities.search_res[event.target.value];
+                    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(utilities.saved_toastLive)
+                    toastBootstrap.show()
                 }
             });
 
             utilities.save_result_ev.addEventListener("click", function (event) {
-                console.log("delete 1")
                 if (event.target.value) {
-                    console.log("delete 2")
-                    console.log(event.target.value)
-                    console.log("delete 2")
                     delete utilities.saved_photos_data[event.target.value]
                     funcs.save_click()
+                    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(utilities.delete_toastLive)
+                    toastBootstrap.show()
                 }
             });
         },

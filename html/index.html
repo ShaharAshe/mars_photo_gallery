@@ -10,16 +10,13 @@
 </head>
 <body>
 <div class="container-fluid">
-    <!--top image-->
     <div class="row"><div class="col-12 text-center bg-info d-sm-none"><h2>Mars photos</h2></div></div>
     <div class="row"><div class="col-12 text-center d-none d-sm-block"><img src="../media/NASA.png" class="top_img_pg" alt="NASA image"></div></div>
-
-    <!--navbar-->
     <div class="row">
         <div class="col">
             <nav class="navbar navbar-expand-lg bg-body-tertiary">
                 <div class="container-fluid">
-                    <a class="navbar-brand" href="#" onclick="main.home_click()"><img src="../media/mars_logo.png" class="mars_logo" alt="Mars logo image"></a>
+                    <a class="navbar-brand" href="#" onclick="funcs.home_click()"><img src="../media/mars_logo.png" class="mars_logo" alt="Mars logo image"></a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
@@ -36,20 +33,14 @@
             </nav>
         </div>
     </div>
-
     <br>
-
-    <!--main-->
     <div class="row home_page">
         <div class="col-4 d-none d-md-block"></div>
-
-        <!--form-->
         <div class="col-12 col-lg-4">
             <div class="spinner-border position-absolute top-50 start-50 end-50 bottom-50" role="status" style="font-size: 50px; width: 10rem; height: 10rem;">
                 <span class="visually-hidden">Loading...</span>
             </div>
-            <form class="row g-3" method="post" action="#">
-                <!--date-->
+            <form class="row g-3" method="get" action="#">
                 <div class="col-12 col-md-6">
                     <label for="date_type" class="form-label">Select Date type</label>
                     <select class="form-select" aria-label="Default select example" id="date_type">
@@ -66,30 +57,20 @@
                     <label for="sol_number" class="form-label">Sol number</label>
                     <input type="number" class="form-control date_of_cam_alert" id="sol_number">
                 </div>
-
-                <!--rover-->
                 <div class="col-12">
                     <label for="rover" class="form-label">Select Rover</label>
                     <select class="form-select" aria-label="Default select example" id="rover">
                         <option value="0" selected>Select Rover</option>
-                        <!--option value="1"></option-->
                     </select>
                 </div>
-
-                <!--camera-->
                 <div class="col-12">
                     <label for="camera" class="form-label">Select Camera <abbr title="need to select rover first" class="initialism"><b>?</b></abbr></label>
                     <!--popover-->
-                    <select class="form-select" aria-label="Default select example" id="camera" data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="bottom" data-bs-content="Bottom popover">
+                    <select class="form-select" aria-label="Default select example" id="camera">
                         <option value="0" selected>Select Camera</option>
-                        <!--option value="1"></option-->
                     </select>
                 </div>
-
-                <!--error-->
                 <div class="bad_val_gu alert alert-danger d-none"></div>
-
-                <!--buttons-->
                 <div class="col-12 text-center">
                     <button class="btn btn-primary search_form_b" type="button">search</button>
                     <button class="btn btn-primary reset_form_b" type="button">clear</button>
@@ -98,21 +79,30 @@
         </div>
         <div class="col-4 d-none d-md-block"></div>
     </div>
-
     <hr class="home_page">
-    <div class="row home_page">
-        <div class="col-12 text-center"><p>Search results</p></div>
+    <div class="row home_page"><div class="col-12 text-center"><p>Search results</p></div></div>
+    <div class="row pic_result home_page text-center"></div>
+    <div class="row save_page d-none text-center">
+        <div class="col-12 show_img_car"><button class="btn btn-dark" type="button" onclick="funcs.show_carousel()">Show all images</button></div>
+        <div class="col-12 Hide_img_car d-none"><button class="btn btn-dark" type="button" onclick="funcs.hide_carousel()">Hide all images</button></div>
     </div>
-    <!--results-->
-    <div class="row pic_result home_page"></div>
-
-    <hr class="save_page">
+    <hr class="save_page d-none">
     <div class="row save_page d-none"><div class="col-12 text-center"><p>Saved images</p></div></div>
+    <div class="row save_page d-none text-center">
+        <div class="col-12 Hide_img_car show_img_car d-none"><div id="carouselExample" class="carousel slide">
+            <div class="carousel-inner"></div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div></div>
+    </div>
     <div class="row save_page save_result d-none"></div>
 </div>
-
-
-<!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -132,10 +122,33 @@
         </div>
     </div>
 </div>
-<script>document.addEventListener('DOMContentLoaded', function(){main.main_func()
-
-});
-</script>
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="saveLiveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <img src="../media/save.png" class="rounded me-2" alt="saved mark" style="width: 20px; height: 20px">
+            <strong class="me-auto"></strong>
+            <small>Just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Image saved successfully
+        </div>
+    </div>
+</div>
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="delLiveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <img src="../media/delete.png" class="rounded me-2" alt="saved mark" style="width: 20px; height: 20px">
+            <strong class="me-auto"></strong>
+            <small>Just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            The image has been deleted
+        </div>
+    </div>
+</div>
+<script>document.addEventListener('DOMContentLoaded', function(){main.main_func()});</script>
 <script src="../js/index.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
