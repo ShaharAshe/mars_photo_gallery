@@ -22,6 +22,7 @@ const utilities = (function() {
     const carousel_ev = document.querySelector(".carousel-inner");
     const show_img_car = document.querySelectorAll(".show_img_car");
     const Hide_img_car = document.querySelectorAll(".Hide_img_car");
+    const myModal = document.getElementById('secondModal');
 
     const date_type_str = ["earth_date", "sol"];
     return {
@@ -46,6 +47,7 @@ const utilities = (function() {
         carousel_ev: carousel_ev,
         show_img_car: show_img_car,
         Hide_img_car: Hide_img_car,
+        myModal: myModal,
     };
 })()
 
@@ -261,9 +263,18 @@ const main = (() => {
             });
             utilities.pic_result_ev.addEventListener("click", function (event) {
                 if (event.target.value) {
-                    page_data.saved_photos_data[page_data.search_res[event.target.value]["id"]] = page_data.search_res[event.target.value];
-                    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(utilities.saved_toastLive)
-                    toastBootstrap.show()
+                    console.log(page_data.search_res[event.target.value]["id"] in page_data.saved_photos_data)
+                    console.log(page_data.search_res[event.target.value]["id"])
+                    console.log(page_data.saved_photos_data)
+                    if(page_data.search_res[event.target.value]["id"] in page_data.saved_photos_data){
+                        const myModal = new bootstrap.Modal(utilities.myModal)
+                        myModal.show();
+                    }
+                    else {
+                        page_data.saved_photos_data[page_data.search_res[event.target.value]["id"]] = page_data.search_res[event.target.value];
+                        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(utilities.saved_toastLive)
+                        toastBootstrap.show()
+                    }
                 }
             });
             utilities.save_result_ev.addEventListener("click", function (event) {

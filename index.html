@@ -89,7 +89,8 @@
     <hr class="save_page d-none">
     <div class="row save_page d-none"><div class="col-12 text-center"><p>Saved images</p></div></div>
     <div class="row save_page d-none text-center">
-        <div class="col-12 Hide_img_car show_img_car d-none"><div id="carouselExample" class="carousel slide">
+        <div class="col-4 d-none d-sm-block"></div>
+        <div class="col-12 col-md-4 Hide_img_car show_img_car d-none"><div id="carouselExample" class="carousel slide">
             <div class="carousel-inner"></div>
             <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -100,6 +101,7 @@
                 <span class="visually-hidden">Next</span>
             </button>
         </div></div>
+        <div class="col-4 d-none d-sm-block"></div>
     </div>
     <div class="row save_page save_result d-none"></div>
 </div>
@@ -115,6 +117,22 @@
                     <li><u>name</u>: Shahar Asher</li>
                     <li><u>Mail</u>: shaharas@edu.hac.ac.il</li>
                 </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="secondModal" tabindex="-1" aria-labelledby="secondModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5 lead" id="secondModalLabel">ERROR!</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Image already saved</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
