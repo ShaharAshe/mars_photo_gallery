@@ -129,25 +129,29 @@ const funcs = (function (){
             if(utilities.date_type_ev.value !== '0')
                 utilities.date_of_cam_none_ev[Number(utilities.date_type_ev.value)-1].classList.remove('d-none')
         },
+        add_scope: function (data, scope_parent, first_btn, second_btn, index, first_color, second_color, class_l){
+            const img = `<div class="col-12 col-sm-6 col-lg-4 text-center">
+                                                        <div class="card" style="width: 18rem;">
+                                                            <img src="${data["img_src"]}" class="card-img-top img-fluid d-none d-sm-block" alt="mars image">
+                                                            <div class="card-body">
+                                                                <p class="card-text">Earth date: ${data["earth_date"]}</p>
+                                                                <p class="card-text">Sol: ${data["sol"]}</p>
+                                                                <p class="card-text">Camera: ${data["camera"]["name"]}</p>
+                                                                <p class="card-text">Mission: ${data["rover"]["name"]}</p>
+                                                                <button class="btn ${first_color} ${class_l}" value="${index}">${first_btn}</button>
+                                                                <a href="${data["img_src"]}" target="_blank" class="btn ${second_color}">${second_btn}</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>`
+            scope_parent.innerHTML += img
+        },
         save_click: function () {
             utilities.save_result_ev.innerHTML = ``
             utilities.carousel_ev.innerHTML = ``
             let index = 0;
             utilities.saved_photos_data.forEach(photo => {
-                const img = `<div class="col-12 col-sm-6 col-lg-4 text-center">
-                                                        <div class="card" style="width: 18rem;">
-                                                            <img src="${photo["img_src"]}" class="card-img-top img-fluid d-none d-sm-block" alt="mars image">
-                                                            <div class="card-body">
-                                                                <p class="card-text">Earth date: ${photo["earth_date"]}</p>
-                                                                <p class="card-text">Sol: ${photo["sol"]}</p>
-                                                                <p class="card-text">Camera: ${photo["camera"]["name"]}</p>
-                                                                <p class="card-text">Mission: ${photo["rover"]["name"]}</p>
-                                                                <button class="btn btn-danger del_pic" value="${(utilities.saved_photos_data.indexOf(photo).toString())}">delete</button>
-                                                                <a href="${photo["img_src"]}" target="_blank" class="btn btn-primary"">full image</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>`
-                utilities.save_result_ev.innerHTML += img
+                funcs.add_scope(photo, utilities.save_result_ev, "delete", "full image", (utilities.saved_photos_data.indexOf(photo).toString()), "btn-danger", "btn-primary", "del_pic")
+
                 let carousel_scope = ``
                 if(index === 0) {
                     carousel_scope = `<div class="carousel-item active"><img src="${photo["img_src"]}" class="d-block w-100" alt="mars image"></div>`
@@ -193,6 +197,23 @@ const funcs = (function (){
                 car.classList.add('d-none')
             });
         },
+        alert_msg: function (value_check_1, value_check_2, alert_box){
+            alert_box.innerHTML = ``;
+            let is_alert = false;
+
+            if (value_check_1.value === "0") {
+                alert_box.innerHTML += `The date type must not be empty`;
+                is_alert = true;
+            } else if (!value_check_2[Number(value_check_1.value) - 1].value){
+                alert_box.innerHTML += `The date must not be empty`;
+                is_alert = true;
+            }
+            if (utilities.rover_ev.value === '0'){
+                alert_box.innerHTML += `<br>The rover must not be empty`;
+                is_alert = true;
+            }
+            return is_alert;
+        },
     }
 })()
 
@@ -225,18 +246,8 @@ const main = (() => {
             });
 
             utilities.search_ev.addEventListener("click", function () {
-                let alert_msg = ""
-                utilities.bad_val_gu_ev.classList.add("d-none")
-
-                if (utilities.date_type_ev.value === "0")
-                    alert_msg += "The date type must not be empty";
-                else if (!utilities.date_of_cam_alert_ev[Number(utilities.date_type_ev.value) - 1].value)
-                    alert_msg += "The date must not be empty";
-
-                if (utilities.rover_ev.value === '0')
-                    alert_msg += "\nThe rover must not be empty";
-
-                if (alert_msg !== "") {
+                utilities.bad_val_gu_ev.classList.add("d-none");
+                if (funcs.alert_msg(utilities.date_type_ev, utilities.date_of_cam_alert_ev, utilities.bad_val_gu_ev)) {
                     utilities.bad_val_gu_ev.classList.remove("d-none")
                 } else {
                     utilities.spinner.classList.remove("d-none");
@@ -251,30 +262,18 @@ const main = (() => {
                             utilities.search_res = json['photos'];
                             utilities.pic_result_ev.innerHTML = ``;
                             let value_photo = 0;
+
                             utilities.search_res.forEach(photo => {
-                                const img = `<div class="col-12 col-sm-6 col-lg-4 text-center">
-                                                        <div class="card" style="width: 18rem;">
-                                                            <img src="${photo["img_src"]}" class="card-img-top img-fluid d-none d-sm-block" alt="mars image">
-                                                            <div class="card-body">
-                                                                <p class="card-text">Earth date: ${photo["earth_date"]}</p>
-                                                                <p class="card-text">Sol: ${photo["sol"]}</p>
-                                                                <p class="card-text">Camera: ${photo["camera"]["name"]}</p>
-                                                                <p class="card-text">Mission: ${page_data.api_data[Number(utilities.rover_ev.value) - 1]["name"]}</p>
-                                                                <button class="btn btn-success save_pic" value="${(value_photo++).toString()}">save</button>
-                                                                <a href="${photo["img_src"]}" target="_blank" class="btn btn-primary"">full image</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>`
-                                utilities.pic_result_ev.innerHTML += img
+                                funcs.add_scope(photo, utilities.pic_result_ev, "save", "full image", (value_photo++).toString(), "btn-success", "btn-primary", "save_pic")
                             });
                             utilities.spinner.classList.add("d-none");
+
                         })
                         // remove spinner hear
                         .catch((error) => {
                             console.log(error);
                         });
                 }
-                utilities.bad_val_gu_ev.innerHTML = alert_msg;
                 utilities.save_pics = document.querySelectorAll(".save_pic")
             });
 
