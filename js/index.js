@@ -2,6 +2,7 @@ const token = "yy2G4hgnUsRe9BEjKIpfHHjMKCO3nj9ifdOMmHa2";
 const url = "https://api.nasa.gov/mars-photos/api/v1/rovers"
 
 const utilities = (function() {
+    const date_type_str = ["earth_date", "sol"];
     const date_type_ev =  document.getElementById("date_type");
     const earth_date_ev =  document.getElementById("earth_date");
     const sol_number_ev =  document.getElementById("sol_number");
@@ -9,22 +10,22 @@ const utilities = (function() {
     const date_of_cam_alert_ev = document.querySelectorAll(".date_of_cam_alert");
     const rover_ev =  document.getElementById("rover");
     const camera_ev =  document.getElementById("camera");
-    const search_ev = document.querySelector(".search_form_b");
-    const reset_ev = document.querySelector(".reset_form_b");
-    const pic_result_ev = document.querySelector(".pic_result");
-    const save_result_ev = document.querySelector(".save_result")
-    const bad_val_gu_ev = document.querySelector(".bad_val_gu");
+    const search_ev = document.querySelector("button.search_form_b");
+    const reset_ev = document.querySelector("button.reset_form_b");
+    const pic_result_ev = document.querySelector("div.pic_result");
+    const save_result_ev = document.querySelector("div.save_result")
+    const bad_val_gu_ev = document.querySelector("div.bad_val_gu");
     const home_page = document.querySelectorAll(".home_page");
     const save_page = document.querySelectorAll(".save_page");
     const saved_toastLive = document.getElementById('saveLiveToast');
     const delete_toastLive = document.getElementById('delLiveToast');
-    const spinner = document.querySelector(".spinner-border");
-    const carousel_ev = document.querySelector(".carousel-inner");
+    const spinner = document.querySelector("div.spinner-border");
+    const carousel_ev = document.querySelector("div.carousel-inner");
     const show_img_car = document.querySelectorAll(".show_img_car");
     const Hide_img_car = document.querySelectorAll(".Hide_img_car");
     const myModal = document.getElementById('secondModal');
+    const error_modal_msg = document.querySelector("p.error_modal");
 
-    const date_type_str = ["earth_date", "sol"];
     return {
         date_type_ev: date_type_ev,
         earth_date_ev: earth_date_ev,
@@ -48,6 +49,7 @@ const utilities = (function() {
         show_img_car: show_img_car,
         Hide_img_car: Hide_img_car,
         myModal: myModal,
+        error_modal_msg: error_modal_msg,
     };
 })()
 
@@ -132,19 +134,7 @@ const funcs = (function (){
                 utilities.date_of_cam_none_ev[Number(utilities.date_type_ev.value)-1].classList.remove('d-none')
         },
         add_scope: function (data, scope_parent, first_btn, second_btn, index, first_color, second_color, class_l){
-            const img = `<div class="col-12 col-sm-6 col-lg-4 text-center">
-                                                        <div class="card">
-                                                            <img src="${data["img_src"]}" class="card-img-top img-fluid d-none d-sm-block" alt="mars image">
-                                                            <div class="card-body">
-                                                                <p class="card-text">Earth date: ${data["earth_date"]}</p>
-                                                                <p class="card-text">Sol: ${data["sol"]}</p>
-                                                                <p class="card-text">Camera: ${data["camera"]["name"]}</p>
-                                                                <p class="card-text">Mission: ${data["rover"]["name"]}</p>
-                                                                <button class="btn ${first_color} ${class_l}" value="${index}">${first_btn}</button>
-                                                                <a href="${data["img_src"]}" target="_blank" class="btn ${second_color}">${second_btn}</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>`
+            const img = `<div class="col-12 col-sm-6 col-lg-4 text-center"><div class="card"><img src="${data["img_src"]}" class="card-img-top img-fluid d-none d-sm-block" alt="mars image"><div class="card-body"><p class="card-text">Earth date: ${data["earth_date"]}</p><p class="card-text">Sol: ${data["sol"]}</p><p class="card-text">Camera: ${data["camera"]["name"]}</p><p class="card-text">Mission: ${data["rover"]["name"]}</p><button class="btn ${first_color} ${class_l}" value="${index}">${first_btn}</button><a href="${data["img_src"]}" target="_blank" class="btn ${second_color}">${second_btn}</a></div></div></div>`
             scope_parent.innerHTML += img
         },
         save_click: function () {
@@ -154,11 +144,11 @@ const funcs = (function (){
             page_data.saved_photos_data.forEach(photo => {
                 funcs.add_scope(photo, utilities.save_result_ev, "delete", "full image", (page_data.saved_photos_data.indexOf(photo).toString()), "btn-danger", "btn-primary", "del_pic")
                 if(index === 0) {
-                    utilities.carousel_ev.innerHTML += `<div class="carousel-item active"><img src="${photo["img_src"]}" class="d-block w-100" alt="mars image"></div>`
+                    utilities.carousel_ev.innerHTML += `<div class="carousel-item active"><img src="${photo["img_src"]}" class="d-block w-100" alt="mars image"><div class="carousel-caption d-none d-md-block"><h5>${photo["camera"]["name"]}</h5><p>${photo["earth_date"]}</p><a href="${photo["img_src"]}" target="_blank" class="btn btn-primary">Full size</a></div></div>`
                     ++index;
                 }
                 else
-                    utilities.carousel_ev.innerHTML += `<div class="carousel-item"><img src="${photo["img_src"]}" class="d-block w-100" alt="mars image"></div>`
+                    utilities.carousel_ev.innerHTML += `<div class="carousel-item"><img src="${photo["img_src"]}" class="d-block w-100" alt="mars image"><div class="carousel-caption d-none d-md-block"><h5>${photo["camera"]["name"]}</h5><p>${photo["earth_date"]}</p><a href="${photo["img_src"]}" target="_blank" class="btn btn-primary">Full size</a></div></div>`
             });
 
             utilities.home_page.forEach(home => {
@@ -263,15 +253,14 @@ const main = (() => {
             });
             utilities.pic_result_ev.addEventListener("click", function (event) {
                 if (event.target.value) {
-                    console.log(page_data.search_res[event.target.value]["id"] in page_data.saved_photos_data)
-                    console.log(page_data.search_res[event.target.value]["id"])
-                    console.log(page_data.saved_photos_data)
-                    if(page_data.search_res[event.target.value]["id"] in page_data.saved_photos_data){
+                    const rover_id = page_data.search_res[event.target.value]["id"];
+                    if(rover_id in page_data.saved_photos_data){
+                        utilities.error_modal_msg.innerHTML = `Image (id: ${rover_id}) already saved`
                         const myModal = new bootstrap.Modal(utilities.myModal)
                         myModal.show();
                     }
                     else {
-                        page_data.saved_photos_data[page_data.search_res[event.target.value]["id"]] = page_data.search_res[event.target.value];
+                        page_data.saved_photos_data[rover_id] = page_data.search_res[event.target.value];
                         const toastBootstrap = bootstrap.Toast.getOrCreateInstance(utilities.saved_toastLive)
                         toastBootstrap.show()
                     }

@@ -65,7 +65,6 @@
                 </div>
                 <div class="col-12">
                     <label for="camera" class="form-label">Select Camera <abbr title="need to select rover first" class="initialism"><b>?</b></abbr></label>
-                    <!--popover-->
                     <select class="form-select" aria-label="Default select example" id="camera">
                         <option value="0" selected>Select Camera</option>
                     </select>
@@ -103,6 +102,7 @@
         </div></div>
         <div class="col-4 d-none d-sm-block"></div>
     </div>
+    <br>
     <div class="row save_page save_result d-none"></div>
 </div>
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -132,7 +132,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Image already saved</p>
+                <p class="error_modal">Image already saved</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
