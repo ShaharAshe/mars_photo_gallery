@@ -73,6 +73,13 @@ const page_data = (function (){
         api_data: api_data,
         load_data: function () {
             fetch(`${url}?api_key=${token}`)
+                .then((status)=> {
+                    if (status.status >= 200 && status.status < 300) {
+                        return Promise.resolve(status)
+                    } else {
+                        return Promise.reject(new Error(status.statusText))
+                    }
+                })
                 .then((response) => response.json())
                 .then((json) => {
                     page_data.api_data = json['rovers'];
@@ -102,7 +109,6 @@ const funcs = (function (){
             }
         },
         update_date_min_max: function (){
-            utilities.sol_number_ev.removeAttribute("max");
             utilities.earth_date_ev.removeAttribute("max");
             utilities.earth_date_ev.removeAttribute("min");
             if (utilities.rover_ev.value !== '0') {
@@ -119,14 +125,15 @@ const funcs = (function (){
             });
             utilities.earth_date_ev.value = "";
             utilities.sol_number_ev.value = "";
-
             while(utilities.camera_ev.childElementCount !== 1) {
                 utilities.camera_ev.removeChild(utilities.camera_ev.lastChild);
             }
-
             utilities.pic_result_ev.innerHTML = ``;
             utilities.bad_val_gu_ev.innerHTML = ``;
             utilities.bad_val_gu_ev.classList.add('d-none')
+            utilities.date_err.forEach(date_type => {
+                date_type.classList.add('d-none');
+            });
         },
         set_date_type: function (){
             utilities.date_of_cam_none_ev.forEach(date=>{
@@ -142,17 +149,21 @@ const funcs = (function (){
         save_click: function () {
             utilities.save_result_ev.innerHTML = ``
             utilities.carousel_ev.innerHTML = ``
-            let index = 0;
-            page_data.saved_photos_data.forEach(photo => {
-                funcs.add_scope(photo, utilities.save_result_ev, "delete", "full image", (page_data.saved_photos_data.indexOf(photo).toString()), "btn-danger", "btn-primary", "del_pic")
-                if(index === 0) {
-                    utilities.carousel_ev.innerHTML += `<div class="carousel-item active"><img src="${photo["img_src"]}" class="d-block w-100" alt="mars image"><div class="carousel-caption d-none d-md-block"><h5>${photo["camera"]["name"]}</h5><p>${photo["earth_date"]}</p><a href="${photo["img_src"]}" target="_blank" class="btn btn-primary">Full size</a></div></div>`
-                    ++index;
-                }
-                else
-                    utilities.carousel_ev.innerHTML += `<div class="carousel-item"><img src="${photo["img_src"]}" class="d-block w-100" alt="mars image"><div class="carousel-caption d-none d-md-block"><h5>${photo["camera"]["name"]}</h5><p>${photo["earth_date"]}</p><a href="${photo["img_src"]}" target="_blank" class="btn btn-primary">Full size</a></div></div>`
-            });
-
+            console.log(Object.keys(page_data.saved_photos_data).length)
+            console.log(Object.keys(page_data.saved_photos_data))
+            if (Object.keys(page_data.saved_photos_data).length === 0)
+                utilities.save_result_ev.innerHTML = `<h2>No photos</h2>`;
+            else {
+                let index = 0;
+                page_data.saved_photos_data.forEach(photo => {
+                    funcs.add_scope(photo, utilities.save_result_ev, "delete", "full image", (page_data.saved_photos_data.indexOf(photo).toString()), "btn-danger", "btn-primary", "del_pic")
+                    if (index === 0) {
+                        utilities.carousel_ev.innerHTML += `<div class="carousel-item active"><img src="${photo["img_src"]}" class="d-block w-100" alt="mars image"><div class="carousel-caption d-none d-md-block"><h5>${photo["camera"]["name"]}</h5><p>${photo["earth_date"]}</p><a href="${photo["img_src"]}" target="_blank" class="btn btn-primary">Full size</a></div></div>`
+                        ++index;
+                    } else
+                        utilities.carousel_ev.innerHTML += `<div class="carousel-item"><img src="${photo["img_src"]}" class="d-block w-100" alt="mars image"><div class="carousel-caption d-none d-md-block"><h5>${photo["camera"]["name"]}</h5><p>${photo["earth_date"]}</p><a href="${photo["img_src"]}" target="_blank" class="btn btn-primary">Full size</a></div></div>`
+                });
+            }
             utilities.home_page.forEach(home => {
                 home.classList.add("d-none")
             });
@@ -206,14 +217,15 @@ const funcs = (function (){
             utilities.date_err.forEach(date_type => {
                 date_type.classList.add('d-none');
             });
-            if (scope.value > scope.getAttribute("max")){
+            if (scope.value > Number(scope.getAttribute("max"))){
                 scope.value = scope.getAttribute("max");
                 utilities.date_err[Number(utilities.date_type_ev.value)-1].innerHTML = `<p class="text-danger">${type_str} maximum value is ${scope.getAttribute("max")}</p>`
-            } else if (scope.value !== '' && scope.value < scope.getAttribute("min")){
+                utilities.date_err[Number(utilities.date_type_ev.value)-1].classList.remove('d-none')
+            } else if (scope.value !== '' && scope.value < Number(scope.getAttribute("min"))){
                 scope.value = scope.getAttribute("min");
                 utilities.date_err[Number(utilities.date_type_ev.value)-1].innerHTML = `<p class="text-danger">${type_str} minimum value is ${scope.getAttribute("min")}</p>`
+                utilities.date_err[Number(utilities.date_type_ev.value)-1].classList.remove('d-none')
             }
-            utilities.date_err[Number(utilities.date_type_ev.value)-1].classList.remove('d-none')
         },
     }
 })()
@@ -221,16 +233,19 @@ const funcs = (function (){
 const main = (() => {
     const search_photos = function(){
         utilities.pic_result_ev.innerHTML = ``;
-        let value_photo = 0;
-        page_data.search_res.forEach(photo => {
-            funcs.add_scope(photo, utilities.pic_result_ev, "save", "full image", (value_photo++).toString(), "btn-success", "btn-primary", "save_pic")
-        });
+        if (page_data.search_res.length === 0)
+            utilities.pic_result_ev.innerHTML = `<h2>No photos</h2>`;
+        else {
+            let value_photo = 0;
+            page_data.search_res.forEach(photo => {
+                funcs.add_scope(photo, utilities.pic_result_ev, "save", "full image", (value_photo++).toString(), "btn-success", "btn-primary", "save_pic")
+            });
+        }
     };
     return {
         main_func: () => {
             page_data.load_data();
             utilities.sol_number_ev.setAttribute("max", Number.MAX_SAFE_INTEGER.toString());
-            console.log(Number.MAX_VALUE.toString())
             utilities.date_type_ev.addEventListener("mouseup", function () {
                 funcs.set_date_type();
             });
@@ -272,6 +287,13 @@ const main = (() => {
                     utilities.spinner.classList.remove("d-none");
                     const camera_ref = (utilities.camera_ev.value !== '0')? `&camera=${utilities.camera_ev.value}`:``;
                     fetch(`${url}/${page_data.api_data[utilities.rover_ev.value - 1]["name"]}/photos?api_key=${token}&${utilities.date_type_str[Number(utilities.date_type_ev.value) - 1]}=${utilities.date_of_cam_alert_ev[Number(utilities.date_type_ev.value) - 1].value}${camera_ref}`)
+                        .then((status)=> {
+                            if (status.status >= 200 && status.status < 300) {
+                                return Promise.resolve(status)
+                            } else {
+                                return Promise.reject(new Error(status.statusText))
+                            }
+                        })
                         .then((response) => response.json())
                         .then((json) => {
                             page_data.search_res = json['photos'];
