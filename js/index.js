@@ -25,6 +25,7 @@ const utilities = (function() {
     const Hide_img_car = document.querySelectorAll(".Hide_img_car");
     const myModal = document.getElementById('secondModal');
     const error_modal_msg = document.querySelector("p.error_modal");
+    const date_err = document.querySelectorAll(".date_err")
 
     return {
         date_type_ev: date_type_ev,
@@ -50,6 +51,7 @@ const utilities = (function() {
         Hide_img_car: Hide_img_car,
         myModal: myModal,
         error_modal_msg: error_modal_msg,
+        date_err: date_err,
     };
 })()
 
@@ -200,6 +202,19 @@ const funcs = (function (){
             }
             return is_alert;
         },
+        valid_date: function (scope, type_str){
+            utilities.date_err.forEach(date_type => {
+                date_type.classList.add('d-none');
+            });
+            if (scope.value > scope.getAttribute("max")){
+                scope.value = scope.getAttribute("max");
+                utilities.date_err[Number(utilities.date_type_ev.value)-1].innerHTML = `<p class="text-danger">${type_str} maximum value is ${scope.getAttribute("max")}</p>`
+            } else if (scope.value !== '' && scope.value < scope.getAttribute("min")){
+                scope.value = scope.getAttribute("min");
+                utilities.date_err[Number(utilities.date_type_ev.value)-1].innerHTML = `<p class="text-danger">${type_str} minimum value is ${scope.getAttribute("min")}</p>`
+            }
+            utilities.date_err[Number(utilities.date_type_ev.value)-1].classList.remove('d-none')
+        },
     }
 })()
 
@@ -214,6 +229,8 @@ const main = (() => {
     return {
         main_func: () => {
             page_data.load_data();
+            utilities.sol_number_ev.setAttribute("max", Number.MAX_SAFE_INTEGER.toString());
+            console.log(Number.MAX_VALUE.toString())
             utilities.date_type_ev.addEventListener("mouseup", function () {
                 funcs.set_date_type();
             });
@@ -223,13 +240,29 @@ const main = (() => {
             utilities.rover_ev.addEventListener("mouseup", function () {
                 funcs.load_cameras();
                 funcs.update_date_min_max();
+                funcs.valid_date(utilities.earth_date_ev, "earth date")
+                funcs.valid_date(utilities.sol_number_ev, "sol number")
             });
             utilities.rover_ev.addEventListener("keyup", function () {
                 funcs.load_cameras();
                 funcs.update_date_min_max();
+                funcs.valid_date(utilities.earth_date_ev, "earth date")
+                funcs.valid_date(utilities.sol_number_ev, "sol number")
             });
             utilities.reset_ev.addEventListener("click", function () {
                 funcs.reset_form();
+            });
+            utilities.earth_date_ev.addEventListener("mouseup", function (){
+                funcs.valid_date(utilities.earth_date_ev, "earth date")
+            });
+            utilities.earth_date_ev.addEventListener("keyup", function (){
+                funcs.valid_date(utilities.earth_date_ev, "earth date")
+            });
+            utilities.sol_number_ev.addEventListener("keyup", function (){
+                funcs.valid_date(utilities.sol_number_ev, "sol number")
+            });
+            utilities.sol_number_ev.addEventListener("mouseup", function (){
+                funcs.valid_date(utilities.sol_number_ev, "sol number")
             });
             utilities.search_ev.addEventListener("click", function () {
                 utilities.bad_val_gu_ev.classList.add("d-none");

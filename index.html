@@ -52,10 +52,12 @@
                 <div class="col-12 col-md-6 date_of_cam_none d-none">
                     <label for="earth_date" class="form-label">Earth date</label>
                     <input type="date" class="form-control date_of_cam_alert" id="earth_date">
+                    <div class="date_err d-none"></div>
                 </div>
                 <div class="col-12 col-md-6 date_of_cam_none d-none">
                     <label for="sol_number" class="form-label">Sol number</label>
-                    <input type="number" class="form-control date_of_cam_alert" id="sol_number">
+                    <input type="number" class="form-control date_of_cam_alert" id="sol_number" min="0">
+                    <div class="date_err d-none"></div>
                 </div>
                 <div class="col-12">
                     <label for="rover" class="form-label">Select Rover</label>
