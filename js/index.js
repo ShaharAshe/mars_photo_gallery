@@ -1,6 +1,33 @@
 const token = "yy2G4hgnUsRe9BEjKIpfHHjMKCO3nj9ifdOMmHa2";
 const url = "https://api.nasa.gov/mars-photos/api/v1/rovers"
 
+/**
+ * @namespace utilities
+ * @description Contains utility functions and HTML element references for the Mars photo application.
+ * @property {HTMLSelectElement} date_type_ev - Select element for choosing date type (Earth date or sol).
+ * @property {HTMLInputElement} earth_date_ev - Input element for Earth date.
+ * @property {HTMLInputElement} sol_number_ev - Input element for sol number.
+ * @property {NodeList} date_of_cam_none_ev - NodeList of elements representing date of camera (none) display elements.
+ * @property {NodeList} date_of_cam_alert_ev - NodeList of elements representing date of camera (alert) display elements.
+ * @property {HTMLSelectElement} rover_ev - Select element for choosing the rover.
+ * @property {HTMLSelectElement} camera_ev - Select element for choosing the camera.
+ * @property {HTMLDivElement} spinner - Div element for displaying a loading spinner.
+ * @property {HTMLButtonElement} search_ev - Button element for initiating the search.
+ * @property {HTMLButtonElement} reset_ev - Button element for resetting the form.
+ * @property {HTMLDivElement} pic_result_ev - Div element for displaying search results.
+ * @property {HTMLDivElement} save_result_ev - Div element for displaying saved photos.
+ * @property {HTMLDivElement} bad_val_gu_ev - Div element for displaying validation error messages.
+ * @property {NodeList} home_page - NodeList of elements representing home page display elements.
+ * @property {NodeList} save_page - NodeList of elements representing save page display elements.
+ * @property {HTMLDivElement} saved_toastLive - Div element for displaying a live toast notification for saving a photo.
+ * @property {HTMLDivElement} delete_toastLive - Div element for displaying a live toast notification for deleting a saved photo.
+ * @property {HTMLDivElement} carousel_ev - Div element for displaying a photo carousel.
+ * @property {NodeList} show_img_car - NodeList of elements representing show image carousel display elements.
+ * @property {NodeList} Hide_img_car - NodeList of elements representing hide image carousel display elements.
+ * @property {HTMLDivElement} myModal - Div element representing a modal for displaying additional information.
+ * @property {HTMLParagraphElement} error_modal_msg - Paragraph element for displaying error messages in the modal.
+ * @property {NodeList} date_err - NodeList of elements representing date error display elements.
+ */
 const utilities = (function() {
     const date_type_str = ["earth_date", "sol"];
     const date_type_ev =  document.getElementById("date_type");
@@ -55,10 +82,24 @@ const utilities = (function() {
     };
 })()
 
+/**
+ * @namespace page_data
+ * @description Contains data and functions related to API data, search results, and saved photos.
+ * @property {Object} api_data - Object to store API data.
+ * @property {Object} search_res - Object to store search results.
+ * @property {Array} saved_photos_data - Array to store saved photos data.
+ * @property {Function} load_data - Fetches and loads API data.
+ */
 const page_data = (function (){
     const api_data = {}
     const search_res = {}
     const saved_photos_data = []
+
+    /**
+     * @function load_rover
+     * @memberof page_data
+     * @description Loads rover options into the rover select element.
+     */
     const load_rovers = () => {
         for (let data = 0; data < page_data.api_data.length; ++data) {
             const new_rover_options = document.createElement("option")
@@ -93,8 +134,17 @@ const page_data = (function (){
     }
 })()
 
+/**
+ * @namespace funcs
+ * @description Contains utility functions for form validation and page navigation.
+ */
 const funcs = (function (){
     return {
+        /**
+         * @function load_cameras
+         * @memberof funcs
+         * @description Loads cameras for the selected rover.
+         */
         load_cameras: function () {
             while (utilities.camera_ev.childElementCount !== 1) {
                 utilities.camera_ev.removeChild(utilities.camera_ev.lastChild);
@@ -108,6 +158,11 @@ const funcs = (function (){
                 }
             }
         },
+        /**
+         * @function update_date_min_max
+         * @memberof funcs
+         * @description Updates date input min and max attributes based on the selected rover.
+         */
         update_date_min_max: function (){
             utilities.earth_date_ev.removeAttribute("max");
             utilities.earth_date_ev.removeAttribute("min");
@@ -117,6 +172,11 @@ const funcs = (function (){
                 utilities.earth_date_ev.setAttribute("min", page_data.api_data[utilities.rover_ev.value - 1]["landing_date"]);
             }
         },
+        /**
+         * @function reset_form
+         * @memberof funcs
+         * @description Resets the search form.
+         */
         reset_form: function (){
             utilities.date_type_ev.selectedIndex = 0;
             utilities.rover_ev.selectedIndex = 0;
@@ -135,6 +195,11 @@ const funcs = (function (){
                 date_type.classList.add('d-none');
             });
         },
+        /**
+         * @function set_date_type
+         * @memberof funcs
+         * @description Sets the display for date types.
+         */
         set_date_type: function (){
             utilities.date_of_cam_none_ev.forEach(date=>{
                 date.classList.add('d-none');
@@ -142,10 +207,28 @@ const funcs = (function (){
             if(utilities.date_type_ev.value !== '0')
                 utilities.date_of_cam_none_ev[Number(utilities.date_type_ev.value)-1].classList.remove('d-none')
         },
+        /**
+         * @function add_scope
+         * @memberof funcs
+         * @description Adds a photo scope to the HTML.
+         * @param {Object} data - Photo data to be added to the HTML.
+         * @param {HTMLDivElement} scope_parent - Parent element to append the photo scope.
+         * @param {string} first_btn - Label for the first button.
+         * @param {string} second_btn - Label for the second button.
+         * @param {number} index - Index of the photo in the saved photos data.
+         * @param {string} first_color - CSS class for styling the first button.
+         * @param {string} second_color - CSS class for styling the second button.
+         * @param {string} class_l - Additional CSS class for styling.
+         */
         add_scope: function (data, scope_parent, first_btn, second_btn, index, first_color, second_color, class_l){
             const img = `<div class="col-12 col-sm-6 col-lg-4 text-center"><div class="card"><img src="${data["img_src"]}" class="card-img-top img-fluid d-none d-sm-block" alt="mars image"><div class="card-body"><p class="card-text">Earth date: ${data["earth_date"]}</p><p class="card-text">Sol: ${data["sol"]}</p><p class="card-text">Camera: ${data["camera"]["name"]}</p><p class="card-text">Mission: ${data["rover"]["name"]}</p><button class="btn ${first_color} ${class_l}" value="${index}">${first_btn}</button><a href="${data["img_src"]}" target="_blank" class="btn ${second_color}">${second_btn}</a></div></div></div>`
             scope_parent.innerHTML += img
         },
+        /**
+         * @function save_click
+         * @memberof funcs
+         * @description Displays saved photos and activates the save page.
+         */
         save_click: function () {
             utilities.save_result_ev.innerHTML = ``
             utilities.carousel_ev.innerHTML = ``
@@ -171,6 +254,11 @@ const funcs = (function (){
                 save.classList.remove("d-none")
             });
         },
+        /**
+         * @function home_click
+         * @memberof funcs
+         * @description Resets the form and activates the home page.
+         */
         home_click: function () {
             utilities.save_page.forEach(home => {
                 home.classList.add("d-none")
@@ -181,6 +269,11 @@ const funcs = (function (){
             funcs.hide_carousel()
             funcs.reset_form();
         },
+        /**
+         * @function show_carousel
+         * @memberof funcs
+         * @description Displays the carousel.
+         */
         show_carousel: function (){
             utilities.show_img_car.forEach(car => {
                 car.classList.add('d-none')
@@ -189,6 +282,11 @@ const funcs = (function (){
                 car.classList.remove('d-none')
             });
         },
+        /**
+         * @function hide_carousel
+         * @memberof funcs
+         * @description Hides the carousel.
+         */
         hide_carousel: function (){
             utilities.show_img_car.forEach(car => {
                 car.classList.remove('d-none')
@@ -197,6 +295,15 @@ const funcs = (function (){
                 car.classList.add('d-none')
             });
         },
+        /**
+         * @function alert_msg
+         * @memberof funcs
+         * @description Displays alert messages for form validation.
+         * @param {HTMLSelectElement} value_check_1 - First value to check.
+         * @param {NodeList} value_check_2 - NodeList of values to check.
+         * @param {HTMLDivElement} alert_box - Div element to display alert messages.
+         * @returns {boolean} - Indicates whether an alert message was displayed.
+         */
         alert_msg: function (value_check_1, value_check_2, alert_box){
             alert_box.innerHTML = ``;
             let is_alert = false;
@@ -213,6 +320,13 @@ const funcs = (function (){
             }
             return is_alert;
         },
+        /**
+         * @function valid_date
+         * @memberof funcs
+         * @description Validates date input based on min and max values.
+         * @param {HTMLInputElement} scope - Date input element to validate.
+         * @param {string} type_str - Type of date input (e.g., "earth date" or "sol number").
+         */
         valid_date: function (scope, type_str){
             utilities.date_err.forEach(date_type => {
                 date_type.classList.add('d-none');
@@ -230,7 +344,16 @@ const funcs = (function (){
     }
 })()
 
+/**
+ * @namespace main
+ * @description Contains the main functionality of the Mars photo application.
+ */
 const main = (() => {
+    /**
+     * @function search_photos
+     * @memberof main
+     * @description Displays search results based on the fetched API data.
+     */
     const search_photos = function(){
         utilities.pic_result_ev.innerHTML = ``;
         if (page_data.search_res.length === 0)
@@ -243,6 +366,11 @@ const main = (() => {
         }
     };
     return {
+        /**
+         * @function main_func
+         * @memberof main
+         * @description Initiates the main functionality.
+         */
         main_func: () => {
             page_data.load_data();
             utilities.sol_number_ev.setAttribute("max", Number.MAX_SAFE_INTEGER.toString());
