@@ -194,6 +194,8 @@ const funcs = (function (){
             utilities.date_err.forEach(date_type => {
                 date_type.classList.add('d-none');
             });
+            utilities.sol_number_ev.setAttribute("max", Number.MAX_SAFE_INTEGER.toString());
+            funcs.default_date_min_max();
         },
         /**
          * @function set_date_type
@@ -314,8 +316,10 @@ const funcs = (function (){
                 alert_box.innerHTML += `The date must not be empty`;
                 is_alert = true;
             }
+            if(alert_box.innerHTML !== ``)
+                alert_box.innerHTML += `<br>`
             if (utilities.rover_ev.value === '0'){
-                alert_box.innerHTML += `<br>The rover must not be empty`;
+                alert_box.innerHTML += `The rover must not be empty`;
                 is_alert = true;
             }
             return is_alert;
@@ -327,19 +331,60 @@ const funcs = (function (){
          * @param {HTMLInputElement} scope - Date input element to validate.
          * @param {string} type_str - Type of date input (e.g., "earth date" or "sol number").
          */
-        valid_date: function (scope, type_str){
+        valid_date: function (scope, type_str, is_earth){
+            let date_val;
+            let max_date;
+            let min_date;
+            if (is_earth)
+            {
+                date_val = new Date(scope.value)
+                max_date = new Date(scope.getAttribute("max"))
+                min_date = new Date(scope.getAttribute("min"))
+                date_val.getTime();
+                max_date.getTime();
+                min_date.getTime();
+            }
+            else{
+                date_val = scope.value;
+                max_date = Number(scope.getAttribute("max"));
+                min_date = Number(scope.getAttribute("min"))
+            }
             utilities.date_err.forEach(date_type => {
                 date_type.classList.add('d-none');
             });
-            if (scope.value > Number(scope.getAttribute("max"))){
+            if (date_val > max_date){
                 scope.value = scope.getAttribute("max");
                 utilities.date_err[Number(utilities.date_type_ev.value)-1].innerHTML = `<p class="text-danger">${type_str} maximum value is ${scope.getAttribute("max")}</p>`
                 utilities.date_err[Number(utilities.date_type_ev.value)-1].classList.remove('d-none')
-            } else if (scope.value !== '' && scope.value < Number(scope.getAttribute("min"))){
+            } else if (date_val !== '' && date_val < min_date){
                 scope.value = scope.getAttribute("min");
                 utilities.date_err[Number(utilities.date_type_ev.value)-1].innerHTML = `<p class="text-danger">${type_str} minimum value is ${scope.getAttribute("min")}</p>`
                 utilities.date_err[Number(utilities.date_type_ev.value)-1].classList.remove('d-none')
             }
+        },
+        default_date_min_max: function (){
+            // Get the current date
+            let min_date = new Date("1000-01-01")
+            let currentDate = new Date();
+
+            // Set the minimum date to today
+            let minDate = min_date.toISOString().split('T')[0];
+            utilities.earth_date_ev.setAttribute("min", minDate);
+
+            // Set the maximum date to one month from today (you can adjust the value as needed)
+            let maxDate = currentDate.toISOString().split('T')[0];
+            utilities.earth_date_ev.setAttribute("max", maxDate);
+        },
+        rover_listen: function (){
+            if (utilities.rover_ev.value !== '0') {
+                console.log(utilities.rover_ev.value)
+                funcs.load_cameras();
+                funcs.update_date_min_max();
+            }
+            if (utilities.date_type_ev.value === '1')
+                funcs.valid_date(utilities.earth_date_ev, "earth date", true)
+            else if (utilities.date_type_ev.value === '2')
+                funcs.valid_date(utilities.sol_number_ev, "sol number", false)
         },
     }
 })()
@@ -374,6 +419,7 @@ const main = (() => {
         main_func: () => {
             page_data.load_data();
             utilities.sol_number_ev.setAttribute("max", Number.MAX_SAFE_INTEGER.toString());
+            funcs.default_date_min_max();
             utilities.date_type_ev.addEventListener("mouseup", function () {
                 funcs.set_date_type();
             });
@@ -381,31 +427,19 @@ const main = (() => {
                 funcs.set_date_type();
             });
             utilities.rover_ev.addEventListener("mouseup", function () {
-                funcs.load_cameras();
-                funcs.update_date_min_max();
-                funcs.valid_date(utilities.earth_date_ev, "earth date")
-                funcs.valid_date(utilities.sol_number_ev, "sol number")
+                funcs.rover_listen();
             });
             utilities.rover_ev.addEventListener("keyup", function () {
-                funcs.load_cameras();
-                funcs.update_date_min_max();
-                funcs.valid_date(utilities.earth_date_ev, "earth date")
-                funcs.valid_date(utilities.sol_number_ev, "sol number")
+                funcs.rover_listen();
             });
             utilities.reset_ev.addEventListener("click", function () {
                 funcs.reset_form();
             });
-            utilities.earth_date_ev.addEventListener("mouseup", function (){
-                funcs.valid_date(utilities.earth_date_ev, "earth date")
+            utilities.earth_date_ev.addEventListener("blur", function (){
+                funcs.valid_date(utilities.earth_date_ev, "earth date", true)
             });
-            utilities.earth_date_ev.addEventListener("keyup", function (){
-                funcs.valid_date(utilities.earth_date_ev, "earth date")
-            });
-            utilities.sol_number_ev.addEventListener("keyup", function (){
-                funcs.valid_date(utilities.sol_number_ev, "sol number")
-            });
-            utilities.sol_number_ev.addEventListener("mouseup", function (){
-                funcs.valid_date(utilities.sol_number_ev, "sol number")
+            utilities.sol_number_ev.addEventListener("blur", function (){
+                funcs.valid_date(utilities.sol_number_ev, "sol number", false)
             });
             utilities.search_ev.addEventListener("click", function () {
                 utilities.bad_val_gu_ev.classList.add("d-none");
