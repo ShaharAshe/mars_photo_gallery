@@ -1,6 +1,8 @@
 const token = "yy2G4hgnUsRe9BEjKIpfHHjMKCO3nj9ifdOMmHa2";
 const url = "https://api.nasa.gov/mars-photos/api/v1/rovers"
 
+document.addEventListener('DOMContentLoaded', function(){main.main_func()});
+
 /**
  * @namespace utilities
  * @description Contains utility functions and HTML element references for the Mars photo application.
@@ -234,8 +236,6 @@ const funcs = (function (){
         save_click: function () {
             utilities.save_result_ev.innerHTML = ``
             utilities.carousel_ev.innerHTML = ``
-            console.log(Object.keys(page_data.saved_photos_data).length)
-            console.log(Object.keys(page_data.saved_photos_data))
             if (Object.keys(page_data.saved_photos_data).length === 0)
                 utilities.save_result_ev.innerHTML = `<h2>No photos</h2>`;
             else {
@@ -377,7 +377,6 @@ const funcs = (function (){
         },
         rover_listen: function (){
             if (utilities.rover_ev.value !== '0') {
-                console.log(utilities.rover_ev.value)
                 funcs.load_cameras();
                 funcs.update_date_min_max();
             }
